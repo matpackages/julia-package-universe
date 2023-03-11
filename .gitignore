@@ -2,3 +2,4 @@
 General/
 .venv/
 .pdm.toml
+.vscode/
