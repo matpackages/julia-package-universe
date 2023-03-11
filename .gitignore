@@ -1,2 +1,4 @@
 .DS_Store
 General/
+.venv/
+.pdm.toml
