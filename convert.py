@@ -9,23 +9,27 @@ def main():
     registry_path = 'General'
     output_file = sys.argv[1]
     registry_file = os.path.join(registry_path, 'Registry.toml')
-    ignore = ['julia']
-    paths = read_package_paths(registry_file, ignore)
+    paths = read_package_paths(registry_file)
     packages = {}
-    for name, path in paths.items():
-        packages[name] = read_package_data(os.path.join(registry_path, path))
+    names = sorted(paths.keys())
+    julia_versions = read_julia_versions('julia-versions.txt')
+    for name in names:
+        if name == 'julia':
+            p = {v: {} for v in julia_versions}
+        else:
+            p = read_package_data(os.path.join(registry_path, paths[name]))
+        packages[name] = p
     write_json(output_file, packages)
 
 
-def read_package_paths(registry_file, ignore):
+def read_package_paths(registry_file):
     registry_data = read_toml(registry_file)
     packages = registry_data['packages']
     paths = {}
     for val in packages.values():
         name = val['name']
-        if name not in ignore:
-            path = val['path']
-            paths[name] = path
+        path = val['path']
+        paths[name] = path
     return paths
 
 
@@ -43,17 +47,26 @@ def read_package_data(path):
 
 def read_versions(file):
     data = read_toml(file)
+    versions = pure_versions(data.keys())
+    return versions
+
+
+def pure_versions(vers):
     versions = []
-    for v in data.keys():
-        ver = v
-        for char in ['-', '+']:
-            if char in ver:
-                p = ver.index(char)
-                ver = ver[0:p]
-        versions.append(ver)
+    for v in vers:
+        versions.append(pure_semver(v))
     versions = list(set(versions))
     versions.sort(key=lambda s: list(map(int, s.split('.'))))
     return versions
+
+
+def pure_semver(v):
+    ver = v
+    for char in ['-', '+']:
+        if char in ver:
+            p = ver.index(char)
+            ver = ver[0:p]
+    return ver
 
 
 def convert_dependencies(deps):
@@ -87,6 +100,20 @@ def read_toml(file):
     with open(file, 'r') as f:
         data = toml.load(f)
     return data
+
+
+def read_julia_versions(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    versions = []
+    for line in lines:
+        if line.startswith('v'):
+            v = line[1:]
+        else:
+            v = line
+        if v.count('.') == 2:
+            versions.append(v.strip())
+    return pure_versions(versions)
 
 
 if __name__ == '__main__':
