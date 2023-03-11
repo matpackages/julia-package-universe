@@ -26,3 +26,14 @@ Convert the dependency graph and save the output as JSON:
 
     pdm run python convert.py julia-packages.json
 
+## Recreate Julia versions file
+
+The file `julia-versions.txt` can be created or updated by:
+
+```bash
+git clone https://github.com/JuliaLang/julia.git
+cd julia
+git tag > ../julia-versions.txt
+cd ..
+rm -Rf julia
+```
