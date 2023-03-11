@@ -21,6 +21,10 @@ class VersionSpec:
         return s
 
     def __contains__(self, version):
+        v = parse_version(version)
+        for lower, upper in self.ranges:
+            if lower <= v <= upper:
+                return True
         return False
 
 
