@@ -29,6 +29,9 @@ class VersionSpec:
 
 
 def parse_range(string):
+    if string == '*':
+        inf = float('inf')
+        return ((0, 0, 0), (inf, inf, inf))
     if '-' in string:
         lower, upper = string.split('-')
     else:

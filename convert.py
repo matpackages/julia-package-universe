@@ -34,9 +34,12 @@ def read_package_paths(registry_file):
 
 
 def read_package_data(path):
-    deps_file = os.path.join(path, 'Compat.toml')
+    deps_file = os.path.join(path, 'Deps.toml')
+    compat_file = os.path.join(path, 'Compat.toml')
     versions_file = os.path.join(path, 'Versions.toml')
-    deps = read_toml(deps_file)
+    deps = read_toml(deps_file) if os.path.isfile(deps_file) else {}
+    compat = read_toml(compat_file)
+    deps = merge_deps_compat(deps, compat)
     deps = convert_dependencies(deps)
     versions = read_versions(versions_file)
     data = {}
@@ -69,6 +72,21 @@ def pure_semver(v):
     return ver
 
 
+def merge_deps_compat(deps, compat):
+    d = {}
+    for range, dependencies in deps.items():
+        dep = {}
+        for name in dependencies.keys():
+            dep[name] = '*'
+        d[range] = dep
+    for range, dependencies in compat.items():
+        dep = d[range] if range in d else {}
+        for name, spec in dependencies.items():
+            dep[name] = spec
+        d[range] = dep
+    return d
+
+
 def convert_dependencies(deps):
     d = {}
     for range, dependencies in deps.items():
@@ -86,7 +104,12 @@ def get_dependencies(deps, version):
         if version in range:
             for name, spec in dependencies.items():
                 if name in d:
-                    raise ValueError('dependency already exists')
+                    if d[name] == '*' and spec != '*':
+                        pass
+                    elif d[name] != '*' and spec == '*':
+                        spec = d[name]
+                    else:
+                        raise ValueError('dependency already exists')
                 d[name] = spec
     return d
 
