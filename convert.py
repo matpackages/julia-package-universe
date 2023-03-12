@@ -12,13 +12,14 @@ def main():
     paths = read_package_paths(registry_file)
     stdlib_packages = read_julia_stdlib('stdlib.txt')
     for name in stdlib_packages:
-        paths[name] = ''
+        if name not in paths:
+            paths[name] = ''
     packages = {}
     names = sorted(paths.keys())
     julia_versions = read_julia_versions('julia-versions.txt')
     for name in names:
         if name == 'julia' or paths[name] == '':
-            p = {v: {} for v in julia_versions}  # Julia or Julia Standard Library packages
+            p = {v: {} for v in julia_versions}  # Julia or Julia Standard Library packages that are not registered
         else:
             p = read_package_data(os.path.join(registry_path, paths[name]))
         packages[name] = p
