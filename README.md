@@ -38,14 +38,15 @@ cd ..
 rm -Rf julia
 ```
 
-## Recreate Pkg versions file
+## Recreate stdlib file
 
-The file `pkg-versions.txt` can be created or updated by:
+The file `stdlib.txt` can be created or updated by:
 
 ```bash
-git clone https://github.com/JuliaLang/Pkg.jl.git
-cd Pkg.jl
-git tag > ../pkg-versions.txt
-cd ..
-rm -Rf Pkg.jl
+git clone https://github.com/JuliaLang/julia.git
+cd julia/stdlib
+ls -1 -d */ > ../../stdlib.txt
+ls -1 *.version >> ../../stdlib.txt
+cd ../..
+rm -Rf julia
 ```
