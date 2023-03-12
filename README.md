@@ -37,3 +37,15 @@ git tag > ../julia-versions.txt
 cd ..
 rm -Rf julia
 ```
+
+## Recreate Pkg versions file
+
+The file `pkg-versions.txt` can be created or updated by:
+
+```bash
+git clone https://github.com/JuliaLang/Pkg.jl.git
+cd Pkg.jl
+git tag > ../pkg-versions.txt
+cd ..
+rm -Rf Pkg.jl
+```

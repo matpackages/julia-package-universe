@@ -10,12 +10,16 @@ def main():
     output_file = sys.argv[1]
     registry_file = os.path.join(registry_path, 'Registry.toml')
     paths = read_package_paths(registry_file)
+    paths['Pkg'] = ''
     packages = {}
     names = sorted(paths.keys())
     julia_versions = read_julia_versions('julia-versions.txt')
+    pkg_versions = read_julia_versions('pkg-versions.txt')
     for name in names:
         if name == 'julia':
             p = {v: {} for v in julia_versions}
+        elif name == 'Pkg':
+            p = {v: {} for v in pkg_versions}
         else:
             p = read_package_data(os.path.join(registry_path, paths[name]))
         packages[name] = p
