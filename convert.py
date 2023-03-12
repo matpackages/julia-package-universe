@@ -10,16 +10,15 @@ def main():
     output_file = sys.argv[1]
     registry_file = os.path.join(registry_path, 'Registry.toml')
     paths = read_package_paths(registry_file)
-    paths['Pkg'] = ''
+    stdlib_packages = read_julia_stdlib('stdlib.txt')
+    for name in stdlib_packages:
+        paths[name] = ''
     packages = {}
     names = sorted(paths.keys())
     julia_versions = read_julia_versions('julia-versions.txt')
-    pkg_versions = read_julia_versions('pkg-versions.txt')
     for name in names:
-        if name == 'julia':
-            p = {v: {} for v in julia_versions}
-        elif name == 'Pkg':
-            p = {v: {} for v in pkg_versions}
+        if name == 'julia' or paths[name] == '':
+            p = {v: {} for v in julia_versions}  # Julia or Julia Standard Library packages
         else:
             p = read_package_data(os.path.join(registry_path, paths[name]))
         packages[name] = p
@@ -141,6 +140,17 @@ def read_julia_versions(file):
         if v.count('.') == 2:
             versions.append(v.strip())
     return pure_versions(versions)
+
+
+def read_julia_stdlib(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    names = []
+    for line in lines:
+        l = line.strip()
+        name = l.replace('/', '').replace('.version', '')
+        names.append(name)
+    return names
 
 
 if __name__ == '__main__':
