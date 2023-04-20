@@ -115,6 +115,9 @@ def get_dependencies(deps, version):
                     else:
                         raise ValueError('dependency already exists')
                 d[name] = spec
+    # sort keys
+    sorted_keys = sorted(d.keys())
+    d = {key: d[key] for key in sorted_keys}
     return d
 
 
