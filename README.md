@@ -6,7 +6,7 @@ Download the package dependency graph of Julia's General registry for use in Pub
 
 This repository contains a Python sript to downlaod and process the package dependency graph of the 
 [Julia General](https://github.com/JuliaRegistries/General) registry and save it in a JSON format that can be used as input to:
-* the Dart implementation of the PubGrub version solver (see [dart-pubgrub-example](https://github.com/matlabpackages/dart-pubgrub-example))
+* the Dart implementation of the PubGrub version solver (see [dart-pubgrub-example](https://github.com/matpackages/dart-pubgrub-example))
 * the MATLAB implementation of the PubGrub version solver
 
 ## Usage
